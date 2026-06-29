@@ -1,0 +1,36 @@
+{
+    "name": "fmidi",
+    "version": "0.1.0-alpha.rev0",
+    "description": "a MIDI render library, aimed at speed & efficiency",
+    "keywords": [
+        "midi",
+        "render",
+        "audio"
+    ],
+    "homepage": "https://github.com/TensiveYT/fmidi#readme",
+    "bugs": {
+        "url": "https://github.com/TensiveYT/fmidi/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TensiveYT/fmidi.git"
+    },
+    "license": "ISC",
+    "author": "King Tensive",
+    "type": "module",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "node test/index"
+    },
+    "devDependencies": {
+        "@types/cli-color": "^2.0.6",
+        "@types/node": "^26.0.1",
+        "@types/node-wav": "^0.0.4",
+        "cli-color": "^2.0.4",
+        "node-wav": "^0.0.2",
+        "typescript": "^6.0.3"
+    },
+    "dependencies": {
+        "soundfont2": "^0.5.0"
+    }
+}
