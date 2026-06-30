@@ -1,7 +1,6 @@
 const util = {
 	math: {
 		freq: (note: number) => 440 * Math.pow(2, (note - 69) / 12),
-		lerp: (a: number, b: number, t: number) => a + (b - a) * t,
 		transpose: (data: Int16Array, root: number, note: number): Int16Array => {
 			let diff = note - root
 			let ratio = 2 ** (diff / 12)
@@ -34,7 +33,7 @@ const util = {
 			}
 
 			return out
-		},
+		}
 	}
 }
 export default util

@@ -1,10 +1,15 @@
 /* import: local libraries */
+import MathExt from '../../libs/mathext/index.js'
 import util from '../../libs/util.js'
 
 /* import: modules */
 import { workerData, parentPort } from 'node:worker_threads'
 
 /* code */
+let cache = {
+	pcmScale: 1 / 32768
+}
+
 parentPort!.on('message', e => {
 	switch (e.message) {
 		case 'start':
@@ -33,32 +38,64 @@ parentPort!.on('message', e => {
 									continue
 
 								let attackLength = Math.floor(key.envelope.attack * sampleRate)
+								let holdLength = duration
 								let releaseLength = Math.floor(key.envelope.release * sampleRate)
 
-								// max out iteration count to avoid checking for boundaries every sample
-								let maxLen = Math.max(0, out.length - time)
-								let iterationCount = Math.min(duration + releaseLength, key.pcm.length, maxLen)
+								let available = MathExt.min(out.length - time, key.pcm.length)
 
-								for (let i = 0; i < iterationCount; i++) {
-									let sample = key.pcm[i]
+								let attackIterationCount = MathExt.max(attackLength, available)
+								let holdIterationCount = MathExt.max(holdLength, available - attackIterationCount)
+								let releaseIterationCount = MathExt.max(releaseLength, available - attackIterationCount - holdIterationCount)
+
+								// attack
+								for (let i = 0; i < attackIterationCount; i++) {
+									let j = i
+
+									let sample = key.pcm[j]
 									
-									let atk = Math.min(i / attackLength, 1)
-									let rel = i < duration ? 1 : 1 - Math.max(0, i - duration) / releaseLength
-									// no decay, for now
+									let atk = i / attackLength
+									let env = (atk * atk)
 
-									let env = (atk * atk) * (rel * rel) // attack, decay, and release mixed
-
-									let y = (sample / 32768) * env * vol
+									let y = (sample * cache.pcmScale) * env * vol
 
 									// add value to output
-									out[time + i] += y
+									out[time + j] += y
+								}
+
+								// hold
+								for (let i = 0; i < holdIterationCount; i++) {
+									let j = i + attackLength
+
+									let sample = key.pcm[j]
+
+									let env = 1 // for now, until i add decay
+
+									let y = (sample * cache.pcmScale) * env * vol
+
+									// add value to output
+									out[time + j] += y
+								}
+
+								// release
+								for (let i = 0; i < releaseIterationCount; i++) {
+									let j = attackLength + holdLength + i
+
+									let sample = key.pcm[j]
+									
+									let rel = 1 - (i / releaseLength)
+									let env = (rel * rel)
+
+									let y = (sample * cache.pcmScale) * env * vol
+
+									// add value to output
+									out[time + j] += y
 								}
 							} else {
 								let freq = util.math.freq(event.note)
 
 								// max out iteration count to avoid checking for boundaries every sample
-								let maxLen = Math.max(0, out.length - time)
-								let iterationCount = Math.min(duration, maxLen)
+								let maxLen = MathExt.min(out.length - time, 0)
+								let iterationCount = MathExt.max(duration, maxLen)
 
 								for (let i = 0; i < iterationCount; i++) {
 									let y = Math.sin((i * 2 * Math.PI * freq) / sampleRate) * vol

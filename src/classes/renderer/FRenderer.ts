@@ -9,6 +9,7 @@ import sf2 from 'soundfont2'
 import { FParser } from '../parser/FParser.js'
 import { FRendererStream } from './FRendererStream.js'
 import { FAudioLimiterEffect } from '../audio/effect/FAudioLimiterEffect.js'
+import { FAudioHardClipEffect } from '../audio/effect/FAudioHardClipEffect.js'
 
 /* import: local interfaces */
 import { FRendererOptions } from '../../interfaces/renderer/FRendererOptions.js'
@@ -193,14 +194,14 @@ export class FRenderer {
 			await Promise.all(threads.map(t => t.promise))
 		
 			let limiter = new FAudioLimiterEffect()
+			let clipper = new FAudioHardClipEffect
 
 			for (let i = 0; i < out.length; i++) {
-				let y = Math.max(Math.min(limiter.in(out[i]), 1), -1)
+				let y = clipper.in(limiter.in(out[i]))
 				out[i] = Number.isNaN(y) ? 0 : y
 			}
 
 			res(out)
 		})
-		
 	}
 }
