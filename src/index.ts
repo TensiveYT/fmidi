@@ -15,6 +15,7 @@ import { FParserThreadResponse } from './interfaces/parser/FParserThreadResponse
 import { FParserTrack } from './interfaces/parser/FParserTrack.js'
 
 import { FRendererOptions } from './interfaces/renderer/FRendererOptions.js'
+import { FRendererStreamControlChangeEvent } from './interfaces/renderer/FRendererStreamControlChangeEvent.js'
 import { FRendererStreamNoteEvent } from './interfaces/renderer/FRendererStreamNoteEvent.js'
 import { FRendererThread } from './interfaces/renderer/FRendererThread.js'
 
@@ -41,6 +42,7 @@ export {
 	FParserTrack,
 
 	FRendererOptions,
+	FRendererStreamControlChangeEvent,
 	FRendererStreamNoteEvent,
 	FRendererThread,
 

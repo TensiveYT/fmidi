@@ -100,10 +100,10 @@ export class FRenderer {
 		let array  = new Uint8Array(buffer)
 		this.soundfont = new sf2.SoundFont2(array)
 
-		this.buildkeyCache()
+		this.buildKeyCache()
 	}
 
-	buildkeyCache() {
+	buildKeyCache() {
 		if (!this.soundfont)
 			return
 

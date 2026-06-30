@@ -1,5 +1,6 @@
 /* declaration */
 export interface FRendererStreamNoteEvent {
+	type: 'note'
 	time: number
 	duration: number
 	channel: number

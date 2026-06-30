@@ -31,6 +31,7 @@ export class FRendererStream {
 			let noteOn = ch?.get(note)?.pop()!
 
 			this.events[channel].push({
+				type: 'note',
 				time: noteOn.time,
 				duration: time - noteOn.time,
 				channel,
@@ -45,6 +46,15 @@ export class FRendererStream {
 				break
 			case 0x09: // note on
 				noteOn(data[1], data[2])
+				break
+			case 0x0b: // control change
+				this.events[channel].push({
+					type: 'control_change',
+					time: time,
+					channel,
+					number: data[1],
+					value: data[2]
+				})
 				break
 		}
 	}
