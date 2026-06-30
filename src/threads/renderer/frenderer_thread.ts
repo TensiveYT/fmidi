@@ -4,11 +4,6 @@ import util from '../../libs/util.js'
 /* import: modules */
 import { workerData, parentPort } from 'node:worker_threads'
 
-let controlChangeMap: Record<number, number[]> = {
-	0x07: Array(16).fill(100),
-	0x0b: Array(16).fill(127)
-}
-
 /* code */
 parentPort!.on('message', e => {
 	switch (e.message) {
@@ -31,8 +26,6 @@ parentPort!.on('message', e => {
 							let duration = Math.floor((event.duration / 1000) * sampleRate)
 							let vel = event.velocity / 128
 							let vol = (vel * vel) * options.volume
-							let c07 = controlChangeMap[0x07][event.channel]
-							let c11 = controlChangeMap[0x0b][event.channel]
 
 							if (keyCache.length !== 0) {
 								let key = keyCache[event.note]
@@ -54,9 +47,8 @@ parentPort!.on('message', e => {
 									// no decay, for now
 
 									let env = (atk * atk) * (rel * rel) // attack, decay, and release mixed
-									let ccv = (c07 / 128) * (c11 / 128) // volume from control changes
 
-									let y = (sample / 32768) * env * vol * ccv
+									let y = (sample / 32768) * env * vol
 
 									// add value to output
 									out[time + i] += y
@@ -76,18 +68,6 @@ parentPort!.on('message', e => {
 								}
 							}
 							break
-						/* to be added later
-						case 'control_change':
-							switch (event.number) {
-								case 0x07: // volume
-									controlChangeMap[0x07] = event.value
-									break
-								case 0x11: // expression
-									controlChangeMap[0x0b] = event.value
-									break
-							}
-							break
-						*/
 					}
 					
 				}
